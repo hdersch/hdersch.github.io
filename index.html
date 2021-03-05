@@ -1,1 +1,54 @@
-Hello World
+<!DOCTYPE html>
+<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/github-markdown.css">
+<style>
+	.markdown-body {
+		box-sizing: border-box;
+		min-width: 200px;
+		max-width: 980px;
+		margin: 0 auto;
+		padding: 45px;
+	}
+
+	@media (max-width: 767px) {
+		.markdown-body {
+			padding: 15px;
+		}
+	}
+</style>
+<article class="markdown-body">
+<h1>GeoImageViewer</h1>
+
+<h2>Viewer for geoaligned photographs.</h2>
+
+<p>View any photograph together 
+with a mapview of the same
+location. Both are linked so that points clicked in 
+the map will be marked in the image and vice-versa.
+Other features like GPS-tracks or the horizon can also be 
+displayed in a linked fashion. Linking is provided
+and calculated in realtime via 3d-elevation data or depthmaps.</p>
+
+<p>Images must be aligned which includes camera calibration, and precise knowledge of
+orientation and location. The program includes tools to determine
+these values, allowing location of features within few pixels error.</p>
+
+<ul>
+<li><a href="Viewing.html">Screenshots and usage information</a>.</li>
+<li><a href="app/main.html">Demo installation with examples of geoaligned images</a>..</li>
+<li><a href="Editing.html">How to prepare and view your own images</a>.</li>
+<li><a href="https://github.com/hdersch/hdersch.github.io">Github project</a>.</li>
+</ul>
+
+<p>GeoImageViewer uses the opensource <a href="https://leafletjs.com/">Leaflet-library</a> as mapview, and free 
+3d-data from <a href="https://eospso.nasa.gov/missions/shuttle-radar-topography-mission">SRTM</a> or derived data. 
+It can be installed
+locally to run completely offline on most HTML-browsers and on almost
+any platform.</p>
+
+<p>GeoImageViewer is published under the terms of the
+GNU General Public License.</p>
+
+<p>Helmut Dersch der(at)hs-furtwangen.de March 2021</p>
+</article>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/github-markdown.css">
+<style>
+	.markdown-body {
+		box-sizing: border-box;
+		min-width: 200px;
+		max-width: 980px;
+		margin: 0 auto;
+		padding: 45px;
+	}
+
+	@media (max-width: 767px) {
+		.markdown-body {
+			padding: 15px;
+		}
+	}
+</style>
+<article class="markdown-body">
+<h1>GeoImageViewer</h1>
+
+<h2>Features</h2>
+
+<p>Below are three example images displayed by GeoImageViewer with screenshots. 
+The corresponding interactive views are available <a href="app/main.html">here</a></p>
+
+<h3>1. Grindelwald</h3>
+
+<p><img src="img/Grindelwald_1b.jpg" alt="Grindelwald total" title="" /></p>
+
+<p>Wideangle panoramic image (138° field of view) of the swiss town of Grindelwald. 
+The Pacman-like greyed feature in the left part of the mapview indicates the camera location, viewing 
+direction (east), and field of view.
+The clicked feature in the photograph is the mountain
+"Schreckhorn", and its elevation, distance from the camera (11.6km) and location are displayed using a popup in the map. 
+This
+view is generated either by clicking the map at the respective location <em>or</em> the photograph, in both cases will
+the program identify and mark the respective location in the other view. 
+It is not 
+precalculated and supplied as clickable hotspot, but calculated on-the-fly by the program.
+That means that <em>any</em> feature like
+buildings in the town, streets, or other landmarks, actually <em>any position</em> can be identified. </p>
+
+<p><img src="img/Grindelwald_2.jpg" alt="Grindelwald zoomed" title="" /></p>
+
+<p>As an example, in the second screenshot we
+zoomed into the view of  the first image by a factor of 30 using the interactive controls (either by pushing
+the +-button in the upper left, or by using the mousewheel, or pinch-zoom in touchscreen devices). 
+Clicking any arbitrary house in the photograph shows us its
+location in the map, or <em>vice versa</em>. The size of this feature in the original photograph is only 5 pixels, hence the fuzzy zoomed image. The original photographs size is 4896x2752 pixels and it was taken with a Sony HDR-AS100V actioncamera during a bicycle trip to the mountain Männlichen. Knowing the calibration parameters
+for this camera I was able to achieve an average error of approximately 3 Pixels for the alignment of the 
+camera with respect to the map, more about this procedure in the article <a href="Editing.html">Editing</a>.</p>
+
+<p>Also shown in the screenshots are two additional features:</p>
+
+<ol>
+<li><p>The position of the horizon is marked green in both views, and can be turned on and off using a menu-option.
+Apps like <a href="https://peakvisor.com">peakvisor</a>, <a href="http://peaklens.com">peaklens</a>, <a href="https://www.peakfinder.org">peakfinder</a>, etc offer similar functionality for images alone.
+This can be used during alignment but is also quite informative in itself. 
+The maximum distance of the horizon
+can also be set. This allows the user to identify staggered mountain ranges. </p></li>
+<li><p>GPS parameters of tracks (3 in the example) are displayed as red lines. Portions of the track which are visible
+in the photograph are marked in bright red in the map, hidden parts in dark red. This visibility is also
+determined within the field of view of the camera, i.e. parts of the track hidden behind
+mountains are dark red in the map (e.g. the invisible portions of the track to the lower left of the first image).
+The tracks can be selectively switched on and off using the layers menu in the upper right part of the mapview.</p></li>
+</ol>
+
+<p>Like the linked locations displayed by clicking, these two features are calculated in realtime.
+Thus, once having a geoaligned view of a mountain, or some other location, we can easily view 
+any trail with known gps-parameters.</p>
+
+<p>The relative sizes of map and imageview are different in the two screenshot examples.
+This ratio can be arbitrarily set using the orange slider.</p>
+
+<h3>2. Oberbränd</h3>
+
+<p><img src="img/Oberbraend_1.jpg" alt="Oberbränd total" title="" />
+Telephoto image of the swiss alps as viewed from Oberbränd (Black Forest/ Germany) on a very clear day. 
+This photograph just covers 4.6° field of view. 
+The horizon (green line) extends well beyond 130km. Camera is a Nikon P900, the focal length equals 400mm relative (35mm equivalent) or 76mm absolute. Again, features like houses in the close town
+of Löffingen (8km), landmarks, or, as in the zoomed-in version below, mountains can be identified:
+The "Muttenstock" (elev. 3089m) is 135km away. </p>
+
+<p><img src="img/Oberbraend_2.jpg" alt="Oberbränd zoomed" title="" /></p>
+
+<h3>3. San Francisco</h3>
+
+<p>The last image was a test about how far we can get with an unknown, uncalibrated camera. This drone-image
+of San Francisco is downloaded from the 
+<a href="https://pixabay.com/photos/san-francisco-sunset-drone-purple-1258848/">internet</a> 
+and nothing, not even the location,
+altitude or camera model was known. Using a couple of reasonable assumptions and by picking a
+number of control points (corresponding points in the image and map), the program was able to come
+up with a reasonable, while not perfect calibration. This is an iterative process, which takes some
+time and effort, and which will be described in more detail 
+<a href="Editing.html">here</a>.</p>
+
+<p><img src="img/San_Francisco_1.jpg" alt="San Francisco total" title="" /></p>
+
+<p>The horizon fits quite well, at least the visible portions. Again, near and far features can be clicked and identified, the farthest away being Mt. Diablo in 45km distance. The zoomed-in version exhibits a closer target,
+the entrance of the InterContinental Mark Hopkins, which is only 268m away from the drone. Also revealed by
+the calibration process is the 
+drone position itself, which is close to 1200 Sacramento St. almost 100m above ground. The view of the 
+image covers 156°, and the mapping is cylindrical, probably converted from a fisheye lens. </p>
+
+<p><img src="img/San_Francisco_2.jpg" alt="San Francisco zoomed" title="" /></p>
+
+<p><em>Note</em>: GeoImageViewer uses elevation data from 
+<a href="https://eospso.nasa.gov/missions/shuttle-radar-topography-mission">SRTM</a>, which are not very useful for urban areas.
+The height is some average of building tops and street level, usually closer to street level.
+To identify tall buildings one therefor has to click somewhere in the lower part of the building,
+or even onto ground level.</p>
+
+<h2>Usage</h2>
+
+<p>GeoImageViewer may be used passively as Image Viewer (<em>Display Mode</em>), or as editor to prepare
+and align photographs for viewing (<em>Edit Mode</em>). In the following we describe <em>Display Mode</em>.</p>
+
+<p>To run GeoImageViewer, open the file <code>main.html</code> with a webbrowser, either remotely
+by clicking this <a href="app/main.html">link</a>, or locally by using the browsers
+File-menu (<em>Note</em>: Running via File->Open works on Firefox. Some other browsers might
+require running via local webserver from localhost. See <a href="Editing.html">Editing</a> for installation
+procedures in these cases). Upon startup, GeoImageViewer loads and displays a set of images described
+in a JSON-database (file <code>images.json</code>). This file can be opened and edited with any 
+plaintext editor like Notepad.</p>
+
+<p>By default GeoImageViewer runs in passive <em>Display Mode</em> 
+like the <a href="app/main.html">demo</a> version. It can be switched to
+<em>Edit Mode</em> by appending <code>?edit</code> to the URL, or by changing the file 
+<code>main.html</code> (see comments inside). Then additional features for 
+authoring are enabled, and at the same time more resources have to be 
+provided by the user. This mode does not work for the online version which
+misses these resources. See the article <a href="Editing.html">Editing</a> how <em>Edit Mode</em> works.</p>
+
+<h3>Display Mode</h3>
+
+<p>In this mode the user can select images in the <strong>&#x2263;</strong>-menu or
+by clicking markers in the mapview. Clicking the <strong>&#x2263;</strong>-button itself opens a file dialog.
+The following files can be opened:</p>
+
+<ul>
+<li>JSON-databases containing image data. When opened these data populate the menulist below this button.</li>
+<li>Images having their alignment parameters stored as EXIF-data within the image file. Images without
+these parameters can only be opened in <em>Edit Mode</em>, and are rejected in <em>Display Mode</em>.</li>
+</ul>
+
+<p>Hovering the label displaying the current images' name (<strong>image</strong>-menu) opens another
+menu for image specific features.
+The layers symbol in the mapview opens a menu (<strong>layers</strong>-menu) with options to show or hide GPS-tracks,
+and image markers.</p>
+
+<p>As mentioned before, clicking one point shows the corresponding location in the other view.
+Of course, not all locations clickable on the map are visible in the image. The program treats
+those invisible points as follows:</p>
+
+<ul>
+<li>Points clicked outside the field-of-view angle are ignored: No marker is displayed in the image.
+Left-over markers from previous clicks can be removed by clicking them again, or by pressing the 
+letter 'z' on the keyboard.</li>
+<li>Points clicked inside the field-of-view, but hidden by some other feature are displayed with an
+orange marker instead of the blue marker for visible features. The location where this orange
+marker appears depends on the source for elevation data (see chapter <a href="Editing.html">Editing</a>: 
+If SRTM-tiles are provided,
+then the true direction of the invisible feature is displayed. For depthmaps, the orange marker points to the 
+top of the obstacle which hides the selected feature).</li>
+</ul>
+
+<h2>Requirements</h2>
+
+<p>The program runs on almost any device supporting webbrowsers.
+It is written entirely in Javascript, HTML and CSS, and can be run
+locally by downloading and installing all programfiles, or remotely from a server
+like <a href="apps/main.html">this setup</a>. I have tested it
+on Firefox and Chrome, on Windows, MacOS, Linux and Android.</p>
+
+<p>Maps are displayed using the <a href="https://leafletjs.com/">Leaflet-program</a>. Any feature or any maps supported by
+Leaflet may be used. See the file <code>main.html</code> and the Leaflet documentation
+about map sources and how to set them up. 
+This documentation and the online-installation use <a href="https://opentopomap.org">OpenTopoMap</a>.
+The example also uses the Leaflet plugin
+<a href="https://github.com/ismyrnow/leaflet-groupedlayercontrol">Groupedlayercontrol</a>.</p>
+
+<p><em>Display Mode</em> requires the main HTML-file (<code>main.html</code>), the GeoImageViewer program (<code>giv.js</code>),
+and the Leaflet program (<code>Leaflet*</code>-files). The module <code>srtm.js</code> in the <code>js</code>-directory
+may be required depending on how 3d-data are supplied: If depthmaps are used like
+in the demo, or color-coded SRTM-tiles are used, nothing else is required. 
+Otherwise, this module needs to be present, and is used to
+access SRTM-tiles, see <a href="Editing.html">Editing</a>.</p>
+
+<p>Helmut Dersch der(at)hs-furtwangen.de</p>
+</article>

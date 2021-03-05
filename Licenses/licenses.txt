@@ -1,0 +1,27 @@
+The program "GeoImageViewer" is published under the terms of the
+GNU General Public License, see the preambel in the file 'giv.js'
+and the file 'Copying' in this directory.
+
+The program uses resources which are published under the terms of the
+following licenses:
+
+- The leaflet library: file "LICENSE.leaflet"
+- The plugin leaflet-groupedlayercontrol: file "LICENSE.leaflet-groupedlayercontrol"
+- pako (gzip-compatible decompressor, linked in file 'srtm.js'): file "LICENSE.pako"
+- bitjs (only the unzipper, and required utilities, linked in file 'srtm.js'):
+        file "LICENSE.bitjs"
+        
+The documentation uses the stylesheet "github-markdown.css". 
+License: "License.markdown-css"
+        
+The Opentopomap used in the documentation and in the example installation
+is published under the terms of the creative commons license CC BY SA 3.0 
+(see https://creativecommons.org/licenses/by-sa/3.0/)
+
+The photograph 'san-francisco-1258848_1920.jpg' is copyright 
+Adam Derewecki, via pixabay.com 
+(https://pixabay.com/photos/san-francisco-sunset-drone-purple-1258848/)
+
+All other photographs in the example installation and the documentation
+are in copyright (Helmut Dersch). They are published under the terms
+of the creative commons license (see above).

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>GeoImageViewer</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<link rel="stylesheet" href="js/leaflet.css">
+        <script src="js/leaflet.js"> </script>
+	<link rel="stylesheet" href="js/leaflet.groupedlayercontrol.min.css">
+        <script src="js/leaflet.groupedlayercontrol.min.js"> </script>
+
+        <script src="js/giv.js"></script>
+        
+        <!--
+        <script src="https://cdn.jsdelivr.net/npm/eruda@2.4.1/eruda.min.js"></script>
+        -->
+    	
+</head>
+<body>
+
+
+
+<script>
+        // debug on mobile devices
+        //eruda.init(); 
+        //let console = eruda.get('console');
+
+        MapViewer.map = { 
+                url:'https://a.tile.opentopomap.org/{z}/{x}/{y}.png', 
+                name:'OpenTopo', 
+                opt: { 
+                        maxZoom: 17, 
+                        tileSize: 256, 
+                        zoomOffset: 0, 
+                        attribution: 
+                                "<code>Kartendaten: © <a href=\"https://openstreetmap.org/copyright\">OpenStreetMap</a>" +
+                                "-Mitwirkende, SRTM | Kartendarstellung: © <a href=\"http://opentopomap.org\">OpenTopoMap</a>" +
+                                "(<a href=\"https://creativecommons.org/licenses/by-sa/3.0/\">CC-BY-SA</a>)</code>"
+               }
+        };
+        
+        
+        // Single set of SRTM-tiles: Color-coded png-images
+        // Elevation.url = "SRTM/*.png";                
+        
+        // more than one srtm-repository
+        /* Elevation.url = ["srtm/SRTM_1x1/*.hgt",
+              "elevation/*.png",
+              "hgt/1x1/*.hgt.zip",
+              "srtm/SRTM_3x3/*.hgt",
+              "hgt/*.hgt.zip"];
+        */
+        
+        ImageMapViewer.options = {
+                edit: false, 
+                database: 'images.json'
+        };
+        
+        ImageMapViewer();
+
+</script>
+
+
+
+</body>
+</html>

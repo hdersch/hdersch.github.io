@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/github-markdown.css">
+<style>
+	.markdown-body {
+		box-sizing: border-box;
+		min-width: 200px;
+		max-width: 980px;
+		margin: 0 auto;
+		padding: 45px;
+	}
+
+	@media (max-width: 767px) {
+		.markdown-body {
+			padding: 15px;
+		}
+	}
+</style>
+<article class="markdown-body">
+<h1>GeoImageViewer</h1>
+
+<h2>Edit Mode</h2>
+
+<h3>General Remarks</h3>
+
+<p>GeoImageViewer runs inside webbrowsers. While this enables almost any platform
+to execute the program, it also applies severe security restrictions. Especially
+any access to the local file system is difficult, which makes the usual load and save
+operations tedious. Unfortunately,we need loads and saves when editing stuff:</p>
+
+<p><strong>Loading the program</strong> 
+from local storage is allowed in some (Firefox) but not in all (e.g. Chrome) browsers.
+In these cases the program files have to be served through a local webserver
+which is easy but annoying. See <a href="https://gist.github.com/jgravois/5e73b56fa7756fd00b89">this page</a>
+for solutions. The simplest working solution is:</p>
+
+<ul>
+<li>Install Python (Available for Windows, preinstalled on most Linux and MacOS installations)</li>
+<li>Navigate to the folder containing the file <code>main.html</code></li>
+<li>Execute <code>python -m SimpleHTTPServer</code> or, if you have python3:
+<code>python3 -m http.server</code></li>
+<li>Open the address <code>http://127.0.0.1:8000/main.html</code> in your browser.</li>
+</ul>
+
+<p><strong>Loading Files</strong> 
+from local storage uses the 'upload' feature of HTML. So whenever a file is
+required by the program, and a file dialog shows up, it is labeled with
+a 'select files to upload' message. Actually, nothing is ever 'uploaded'
+but all data are processed locally.</p>
+
+<p><strong>Saving Files</strong> 
+to local storage is prohibited by all browsers. The workaround in GeoImageViewer
+opens a new browser window, which contains the to-be-saved data. The user then has to manually
+save them using the browsers 'File' menu or by right-clicking the content. 
+It is important to save them correctly, and 
+there is no way for GeoImageViewer to help the user here:
+1. JSON-data have to be saved as <em>text</em>files, not html or anything else. Also, the saved
+filename must have an extension <code>.json</code>
+2. Images created by GeoImageViewer are rendered in a new window, and have to be saved by 
+right-clicking on the image which brings up the browser's 'save graphics' dialog.</p>
+
+<p>There are more annoyances like the browser nagging to stop the 'unresponsive' script
+and the failure to warn for unsaved changes etc.</p>
+
+<h3>Elevation Data</h3>
+
+<p>Geographic linking between map and image is computed through 3d data. 
+Two types of data are supported by GeoImageViewer:</p>
+
+<ol>
+<li>Elevation grids like SRTM-tiles or derived data.
+Elevation or altitude above sea level is provided as a number for 
+each point on a geographical grid.</li>
+<li>Depth-maps specifying distances between camera and earth surface
+for every pixel in the image. See the tutorial below for an example.</li>
+</ol>
+
+<p>In <em>Display Mode</em> the program works almost identical with either type of
+3d-data, but is faster with depthmaps.
+When an image is loaded in this mode, the program searches for a depthmap specification.
+If none is provided, it expects to find SRTM-tiles. 
+<em>Edit Mode</em>, however, always requires SRTM tiles. </p>
+
+<p>To prepare images for GeoImageViewer we therefore have to start
+using a setup in <em>Edit Mode</em> and align the image there. For viewing
+we can then optionally let GeoImageViewer create a depthmap for 
+each image. The filesize of this depthmap is often smaller than the 
+image's filesize, whereas SRTM-tiles are much larger, and several 
+might be needed for a single image.</p>
+
+<p>In <em>Edit Mode</em> the program expects to find all required tiles 
+in the <em>SRTM</em>-directory where they have to be placed before we can proceed. 
+They can be downloaded from NASA-servers,
+and  come as zipped <a href="http://www.gdal.org/frmt_various.html#SRTMHGT">SRTMHGT</a> files at 1-arcsecond resolution (3601x3601 points) in a latitude/longitude projection (<a href="http://spatialreference.org/ref/epsg/wgs-84/">EPSG:4326</a>). This 
+<a href="http://dwtkns.com/srtm30m/">downloader</a> might be helpful.
+A free <a href="https://urs.earthdata.nasa.gov/users/new">NASA Earthdata login</a> is required.
+The same tiles can also be downloaded from within the GeoImageViewer application: Whenever
+a tile is missing for a requested task the program opens a download window to
+fetch it from the NASA-website. The coarser 3-arcsecond resolution tiles (1201x1201 pixels) can also be used,
+as well as enhanced versions of both sets of tiles, which are provided by several sources, e.g. 
+<a href="http://data.opendataportal.at/dataset/dtm-europe">here for Europe</a>. 
+The application can use them as long as they adhere to the general data layout (array of 
+big-endian shorts, either 'zip'- or 'gzip- or un-compressed), and named using the latitude/longitudes of the southwest corner like 'N48E015' for 48° latitude / 15° longitude (S/W for negative values). The filepath and name-template is set via the javascript variable </p>
+
+<p><code>Elevation.url = "SRTM/*.SRTMGL1.hgt.zip"</code> </p>
+
+<p>where the program will replace the * 
+by the string 'N48E015' in the example. The url must be relative to the <code>main.html</code>-file, or absolute. This is the name that works for tiles from the NASA-server. It should be changed if other tiles or directories are used. It is also possible to specify an array of templates,
+which will be processed in order, and which makes it possible to work with sets of different tiles.
+See the file <code>main.html</code> of this distribution for an example. <em>Note</em>: Providing unzipped data significantly enhances
+the speed of the program.</p>
+
+<p>It is also possible to provide SRTM-tiles as color-coded png-images. The distribution contains a
+java-program (<code>ElevationPNG</code>) which allows the user to convert a normal SRTM-tile into such an image, where elevation is coded as</p>
+
+<p><code>elevation / m = red * 256 + green</code></p>
+
+<p>and negative altitudes in 2-s complement. See the source code <code>ElevationPNG.java</code> for details.
+Using this format has two advantages:</p>
+
+<ol>
+<li><p>This is the only way to run GeoImageViewer in <em>Edit Mode</em> without local webserver. For this 
+to work, Firefox is needed.</p></li>
+<li><p>Tilesize and loading times are smaller than using original tiles.</p></li>
+<li><p>The <code>srtm.js</code>-module is not required.</p></li>
+</ol>
+
+<p>The parameter <code>Elevation.url</code> has to be set as above. The <a href="app/main.html">example installation</a> uses this
+option with two tiles which can be used to repeat the tutorial example below. For bandwidth reasons those
+tiles are cropped to the area covered by the example image. They should be upgraded to full coverage
+for any serious work. To just follow the tutorial, we have to edit the file <code>main.html</code> and uncomment the line</p>
+
+<p><code>Elevation.url = "SRTM/*.png";</code> </p>
+
+<h3>Georeference</h3>
+
+<p>To link images to maps we need three sets of parameters:</p>
+
+<ol>
+<li>Geographical location of the camera (latitude, longitude, altitude)</li>
+<li>Optical parameters of the camera (lens and sensor).</li>
+<li>Orientation angles (pitch, yaw, and roll, or pan, tilt, rotation).</li>
+</ol>
+
+<p>The program provides means to determine all these values, which is 
+the subject of this and the next chapter.</p>
+
+<p>To start GeoImageViewer in <em>edit mode</em> we have to append the parameter
+<code>?edit</code> to the URL:</p>
+
+<p><code>http://127.0.0.1/main.html?edit</code></p>
+
+<p>or open the <code>main.html</code>-file in a texteditor and set the parameter</p>
+
+<p><code>ImageMapViewer.options.edit = true;</code></p>
+
+<p>Clicking
+the <strong>&#x2263;</strong>-button brings up a file dialog, and we can open 
+our to-be-aligned image. Our example image is located in the 
+'images'-folder. The following dialog window is displayed (left).</p>
+
+<p><center>
+<img src="img/neu1.jpg" alt="New Image 1" title="" />
+<img src="img/neu2.jpg" alt="New Image 2" title="" />
+</center></p>
+
+<p>These parameters can be set:</p>
+
+<ul>
+<li>Name - will be used to display and reference the image in GeoImageViewer. (default: Filename)</li>
+<li>Directory - relative to the main html-file. GeoImageViewer tries to guess, but, for security reasons, 
+has no means to determine it.</li>
+<li>Camera - the camera in <a href="https://wiki.panotools.org/PTStitcher">PanoTools</a> notation. See appendix for options. 
+<code>f0 v50</code> is a normal (i.e. rectilinear)
+lens with 50° field-of-view. If nothing else is known, this might be a good starting value. If <em>PanoTools</em> paramaters
+are known, they can be pasted into this field.</li>
+<li>Position - click the map at the approximate camera location to get this value. This is the only action which
+is <em>required</em> by the add-image dialog. If the program complains about missing elevation-data, it is now time to
+add the required tile(s). The download window might be of help.</li>
+<li>Rotate - by 0°, 90° or -90°. Images taken in portrait-orientation are displayed correctly using this
+option. Note that the camera parameters (field-of-view, etc) always refer to the <em>landscape</em> value, even if the image
+is rotated.</li>
+</ul>
+
+<p>We end up with the right window
+and can click <em>Add</em>, which loads the image in GeoImageViewer, and puts a mark at the map location.</p>
+
+<p>If you want to follow this example, and cannot find the location, just load the file <code>example.json</code> from
+the <code>Images</code>-directory instead of the example image, which will advance you to this point in
+the workflow. If you have georeferenced images from a camera, which adds gps-parameters
+as EXIF-data, then you can create a suitable JSON-file from these data using a texteditor,
+and start the alignment procedure from this point.</p>
+
+<p>We have now georeferenced the image but not yet aligned. We also have an <strong>image</strong> button tagged with the name
+of the image (<em>Happy Cows</em>) Clicking the <strong>image</strong><em>->Export JSON</em> field displays a 
+window with what we have so far:</p>
+
+<pre><code>[
+    {
+        "url": "Images/DSC05226_C.JPG",
+        "cam": "w1959 h1150 p0 y0 r0 f1 v80 ",
+        "pos": "f12 d7.943115 e46.610771 h2224.87",
+        "name": "Happy Cows",
+        "rot": 0,
+        "cpts": []
+    }
+]
+</code></pre>
+
+<p>The camera is specified as <em>cam</em>-property in <em>PanoTools</em>-format: lenstype <code>f</code> and field-of-view
+<code>v</code> had been set in the opening dialog, width and height have been read from the image
+and set by the program, and the direction <code>p0 y0 r0</code>
+is unspecified yet. The position (<em>pos</em>-property) follows the <em>PanoTools</em>-format with a virtual
+camera <code>f12</code> (just for internal reference, can be omitted) and latitude, longitude and elevation
+as <code>d</code>, <code>e</code>, and <code>h</code>-parameters.
+These data can be saved using the browser's save dialog (textfile with extension <code>.json</code>),
+and can be edited with a plain-text editor. To create a list of images to be
+displayed, create a JSON-textfile with a list of image descriptions like:</p>
+
+<pre><code>[
+    {
+        "url": .....
+        ..
+    },
+    {
+        "url": ...
+        ..
+    },
+    {
+    },..
+</code></pre>
+
+<p>]</p>
+
+<p>or save this list (after adding several images) using <strong>&#x2263;</strong><em>-> Save List</em>.
+We can then view a gallery of georeferenced images, and click on the icons in the map 
+to bring up those images. All we have to do is open this JSON-file after clicking <strong>&#x2263;</strong>.</p>
+
+<h3>Alignment</h3>
+
+<p>Aligning the image is more difficult, and requires setting control points. We search for 
+identifiable and corresponding features in map and image like the close mountain <em>Tschuggen</em>
+in the example. To select features, zoom in, and first click the map, then the image. The marker 
+in the image can be moved and readjusted, but not the popup in the map. </p>
+
+<p><img src="img/edit1.jpg" alt="Edit 1" title="" /></p>
+
+<p>After adjustment,
+press <em>Add 0</em> in the <strong>image</strong>-menu,
+then <strong>image</strong><em>->Align->pyr</em>, which optimizes the orientation (3 angles pitch, yaw, roll). </p>
+
+<p>Press <em>Apply</em>, and 
+the image parameters are updated (not saved to file, this has to be done using <em>Export JSON</em>).</p>
+
+<p>The map image changes: Now that orientation is set, the field-of-view is shown in the mapview.
+To test the alignment we turn on the horizon (<strong>image</strong><em>->Horizon->show</em>), and see that the green line is 
+squeezed with respect to the real horizon. 
+The field-of-view (Hfov) is obviously wrong. We choose
+a second control point, the summit of Eiger. When we click the map, the corresponding
+location in the image is also displayed, but obviously wrong. We move this marker in the image to the 
+'right' spot, i.e. where the Eiger summit is located in the image. The following screenshot shows this stage:</p>
+
+<p><img src="img/edit2.jpg" alt="Edit 2" title="" /></p>
+
+<p>We make sure that the
+marker in the map still points to the Eiger summit there, and press <strong>image</strong>-><em>Add 1</em>,
+then <em>Align->Hfov-pyr</em>. We get improved values for Hfov and orientation, and <em>Apply</em> those.
+Looking at the horizon now shows better agreement.</p>
+
+<p><img src="img/edit3.jpg" alt="Edit 3" title="" /></p>
+
+<p>In this fashion we can add more points, optimize either just pyr, field of-view and orientation,
+or location and pyr. The Levenberg-Marquardt solver (LMSolver) allows the user to optimize
+any of the camera parameters in the PanoTools camera model. The appendix describes some technical details
+of the algorithms. </p>
+
+<p>It is advisable to reexamine
+and adjust previously set control points using the Show-Control point feature. The selected
+control point is then shown using two markers: A green one pointing to the location computed
+by the program, and a blue one pointing to the clicked point in the image. Obviously, the two
+should coincide. The blue one can be readjusted and changed (<strong>image</strong>->change), or the point 
+may be deleted (<strong>image</strong>->remove). It might take 
+10 or more control points for a reasonable fit, and sometimes points just won't work,
+especially close locations, which amplify errors. </p>
+
+<p>Control points can be saved in the JSON-file. They are used in <em>Display mode</em> (only there!)
+as morph points, and the georeference is locally corrected. That means that even a poor fit (see
+San Francisco example) results in accurate display if enough control points are provided.</p>
+
+<h3>Depthmap and JSON-Parameters</h3>
+
+<p>Optionally, we can now generate a depthmap of our image using the <strong>image</strong><em>->Depthmap</em> option.
+With such a depthmap it is possible to view and present the image later without access to SRTM-tiles.
+By default the depthmap will be scaled down by a factor of 2 relative to the original image,
+this scaling factor can be set using <strong>image</strong><em>->scale</em>. When creating the depthmap the browser
+will complain about blocking scripts, the console has some progress information for impatient
+users. The depth
+value is color coded according to the formula</p>
+
+<p><code>depth / m = (red * 256 * 256 + green * 256 + blue) / 10</code></p>
+
+<p><center>
+<img src="img/DSC05226_C_depth.png" alt="Depthmap" title="" />
+</center></p>
+
+<p>The depthmap must use the <em>PNG</em>-format. It can be compressed to smaller
+filesizes using graphics utilities, e.g. opening and resaving in 'The Gimp'
+with maximum compression level shrinks the file considerably without loosing data. 
+Other image manipulations
+might corrupt the encoded data.
+The url of the depthmap must be manually
+added to the JSON-file with the tag "depth":</p>
+
+<pre><code>....{
+        "url": "Images/DSC05226_C.JPG",
+        "depth": "Images/DSC05226_C_depth.png",
+        ...
+</code></pre>
+
+<p>More data can be added to the JSON-file, which influences the display:</p>
+
+<ol>
+<li><strong>attr</strong>: Attribution or copyright string.</li>
+<li><strong>date</strong>: Date string</li>
+<li><strong>info</strong>: arbitrary html-formatted text as array of quoted strings, see the file <code>images.json</code>
+for an example. (1)-(3) are displayed when the user selects <strong>image</strong>->info.</li>
+<li><strong>track</strong>: One or several tracks with properties <em>name</em> for displayed name,  and <em>url</em> for 
+the url of the file, which might either be in <em>gpx</em>, <em>kml</em> or <em>tur</em>-format. If the property <em>ele</em> is set to
+<em>true</em>, elevation for this track will be read from the trackdata, otherwise from the installations 3d-data (default).
+This property should be set if the track is above ground level like a drone-flight or paraglider path.</li>
+<li><strong>thm</strong>: Thumbnail image in base64 encoding. This image is displayed when hovering the menulist
+or the map. It can be created using <strong>image</strong><em>->Create Thumbnail</em>.</li>
+</ol>
+
+<h3>Postprocessing</h3>
+
+<p>Processing of images, which changes pixel positions, has to be specified in
+the JSON-file to enable GeoImageViewer to compensate for the changes.</p>
+
+<ol>
+<li><p>Selection Rectangle. If the displayed image is a rectangular selection
+taken from the original photograph, then the "cam" line of the JSON file
+has to include a parameter 'Cx1,x2,y1,y2' where x and y are the pixel coordinates
+of said rectangle. Example:
+<code>"cam": "y157.95  w5500 h2752 f1 v145  C1200.0,3159.0,560.0,1710.0"</code>.
+The width and height parameters (<code>w5500 h2752</code>) specify the original
+uncut image.</p></li>
+<li><p>Remapping. The image may be remapped to any other projection and orientation using one of the 
+PanoTools-compatible programs (<a href="http://hugin.sourceforge.net/">Hugin</a>, <a href="https://www.ptgui.com/">PTGui</a>, ...).
+The JSON-entry must then refer to the <em>new</em> view. Two likely cases are:</p>
+
+<ul>
+<li><p>Wide-angle fisheye photographs (f2, f5, ...) usually look better when converted to cylindrical
+mapping (f1). The 'Grindelwald'-panorama in the example has been processed in this way.
+If the remapping is performed preserving the field-of-view, then the <em>same</em>
+JSON-data can be used, only the camera id has to be changed to 'f1', and the lensspecific parameters
+'a,b,c,d,e' are removed. </p></li>
+<li><p>Straightening oblique images. Remapping the image using <em>PanoTools</em> with the 'r'-value (roll)
+of the JSON-data straightens the image. The straightened image may be viewed with GeoImageViewer by 
+specifying 'r0' in the JSON. A non-zero pitch value ('p'-parameter, 'tilt') can also be compensated
+but only in landscape images (i.e. rot = 0), not in partrait-mode (rot = +/- 90).</p>
+
+<p>The two remapping methods can be combined in one step. </p></li>
+</ul></li>
+</ol>
+
+<p>If control points
+are used for morphing (see above) we also must specify the original camera with a "prev" tag.</p>
+
+<h3>Algorithm</h3>
+
+<p>GeoImageViewer implements three solvers to find opimum values:</p>
+
+<ol>
+<li><p>The <a href="https://en.wikipedia.org/wiki/Kabsch_algorithm">Kabsch</a> algorithm is used to find the optimum orientation (3 angles pitch, yaw, roll). It is guaranteed to find the global optimum for any set of control points.</p></li>
+<li><p>Two <a href="https://en.wikipedia.org/wiki/Gradient_descent">gradient-descent</a> algorithms are 
+used for Field of view (one dimension) and location (3 dimensions).
+Both are combined with (1), so that in each step the optimum orientation is used.
+They find local optima and require reasonable starting values.</p></li>
+<li><p>The <a href="https://en.wikipedia.org/wiki/Levenberg%E2%80%93Marquardt_algorithm">Levenberg-Marquardt</a> solver 
+optimizes any selection of camera and orientation parameters, and might be used for 
+camera calibration. It can also be used to treat elevation data as variables in cases where 
+the SRTM-tiles are unreliable. In principle, one can link image and map without knowing elevations at all:
+they are the result of the optimization.</p></li>
+</ol>
+
+<p>Generally, the more control points we have, the larger is the danger of getting stuck in 
+local minima, so one should optimize and check after each added point. Optimizers might fail and create nonsense
+values or even 'NaN' (not a number), which can often be cured by changing or removing some 
+weird control points.</p>
+
+<h3>PanoTools Camera Specification</h3>
+
+<ol>
+<li>Mappings (f)
+<ul>
+<li>0 - rectilinear</li>
+<li>1 - cylindrical</li>
+<li>3 - fisheye equidistant </li>
+<li>5 - fisheye equisolid</li>
+</ul></li>
+<li>Horizontal field of view (v) in degrees</li>
+<li>Width (w) in pixels</li>
+<li>Height (h) in pixels</li>
+<li>Selection rectangle (Cx1,x2,y1,y2), pixel coordinates</li>
+<li>Lens distortion paramters a, b, c : Coefficients of 4th-order radial polynomial
+R = a <sup>.</sup> r<sup>4</sup> + b <sup>.</sup> r<sup>3</sup> + c <sup>.</sup> r<sup>2</sup> + (1 - a - b - c) <sup>.</sup> r</li>
+<li>Lens centering paramters d, e : horizontal / vertical off-center distance in pixels.</li>
+</ol>
+
+<p>For more details see the <a href="https://wiki.panotools.org">PanoTools-wiki</a>.</p>
+
+<h3>References and Previous Work</h3>
+
+<p>About camera models, geometry, maps and projections I suggest to read the respective
+wikipedia articles, and the aforementioned <a href="https://wiki.panotools.org">PanoTools-wiki</a>. 
+The use of photographs for deriving 
+geometrical data is the subject of <a href="https://en.wikipedia.org/wiki/Photogrammetry">photogrammetry</a>,
+a scientific discipline dating back well into the 19th century.
+Photography has always been an important tool in geography and cartography, both 
+aerial, and also oblique terrestrial photography (e.g. for some recent developments see 
+<a href="https://www.wsl.ch/en/services-and-products/software-websites-and-apps/monoplotting-tool.html">wsl-monoplotting tool (2014)</a> 
+). </p>
+
+<p>My own previous work on
+ linking of photographs to maps by selecting feature points, and running
+mathematical algorithms to derive and optimize location, orientation and projection parameters,
+started in 1996, and resulted in the application
+<a href="https://wiki.panotools.org/PTStereo">PTStereo (1998)</a>, still 
+<a href="https://www.panotools.org/dersch/">available for download</a>. Its main purpose is
+the extraction of 3d-data of objects by analyzing sets of photographs taken from different
+points of view. The program may also use geographical 2d-maps as input images.
+Pairing a photograph to a map with PTStereo reveils location, orientation and camera parameters,
+as well as a corresponcence of points in the image to points in the map.
+The Levenberg-Marquardt solver in GeoImageViewer is an updated version of
+this algorithm.</p>
+
+<p>Helmut Dersch der(at)hs-furtwangen.de March 2021</p>
+</article>
