@@ -15,10 +15,14 @@ orientation and location. The program includes tools to determine
 these values, allowing location of features within few pixels error.
 
 
-* [Screenshots and usage information](https://hdersch.github.io/Viewing.html).
-* [Demo installation with examples of geoaligned images](https://hdersch.github.io/app/main.html)..
-* [How to prepare and view your own images](https://hdersch.github.io/Editing.html).
+* [Screenshots and usage information](Viewing.html).
+* [Demo installation with examples of geoaligned images](app/main.html)..
+* [How to prepare and view your own images](Editing.html).
 * [Github project](https://github.com/hdersch/hdersch.github.io).
+
+### Gallery
+* Panoramas from a bicycle tour in the swiss alps near Grindelwald:
+[Männlichen](app/main.html?database=Maennlichen&div=0.75). 
 
 GeoImageViewer uses the opensource [Leaflet-library](https://leafletjs.com/) as mapview, and free 
 3d-data from [SRTM](https://eospso.nasa.gov/missions/shuttle-radar-topography-mission) or derived data. 
