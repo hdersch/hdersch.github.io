@@ -1,6 +1,6 @@
-Preambel = `
+Preambel = `<pre>
    GeoImageViewer - Image Viewer linked to Maps
-   Version 0.1 for HTML-browsers
+   Version 0.2 for HTML-browsers
 
    Copyright (C) 2021 - Helmut Dersch  der@hs-furtwangen.de
    
@@ -16,7 +16,11 @@ Preambel = `
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  `;
+   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  </pre>
+   
+   <p><a href="https://hdersch.github.io">Project page</a> with documentation,
+   examples and download.
+   `;
 var BitStream=function(){var l=[0,1,3,7,15,31,63,127,255],k=function(a,h,d,b){if(!(a instanceof ArrayBuffer))throw"Error! BitArray constructed with an invalid ArrayBuffer object";this.bytes=new Uint8Array(a,d||0,b||a.byteLength);this.bitsRead_=this.bitPtr=this.bytePtr=0;this.peekBits=h?this.peekBits_rtl:this.peekBits_ltr};k.prototype.getNumBitsRead=function(){return this.bitsRead_};k.prototype.getNumBitsLeft=function(){return 8*(this.bytes.byteLength-this.bytePtr-1)+(8-this.bitPtr)};k.prototype.peekBits_ltr=
 function(a,h){var d=parseInt(a,10),b=d;if(a!==b||0>=b)return 0;a=this.bytes;for(var e=this.bytePtr,c=this.bitPtr,f=0,g=0;0<b&&!(e>=a.length);){var m=8-c;if(b>=m)f|=(a[e]&l[m]<<c)>>c<<g,e++,c=0,g+=m,b-=m;else{f|=(a[e]&l[b]<<c)>>c<<g;c+=b;break}}h&&(this.bitPtr=c,this.bytePtr=e,this.bitsRead_+=d);return f};k.prototype.peekBits_rtl=function(a,h){var d=parseInt(a,10),b=d;if(a!==b||0>=b)return 0;a=this.bytes;for(var e=this.bytePtr,c=this.bitPtr,f=0;0<b&&!(e>=a.length);){var g=8-c;if(b>=g)f<<=g,f|=l[g]&
 a[e],e++,c=0,b-=g;else{f<<=b;g=8-b-c;f|=(a[e]&l[b]<<g)>>g;c+=b;break}}h&&(this.bitPtr=c,this.bytePtr=e,this.bitsRead_+=d);return f};k.prototype.getBits=function(){return((this.bytes[this.bytePtr]&255)<<16)+((this.bytes[this.bytePtr+1]&255)<<8)+(this.bytes[this.bytePtr+2]&255)>>>8-this.bitPtr&65535};k.prototype.readBits=function(a){return this.peekBits(a,!0)};k.prototype.peekBytes=function(a,h){var d=parseInt(a,10);if(a!==d||0>d)throw"Error!  Called peekBytes() with a non-positive integer: "+a;if(0===
